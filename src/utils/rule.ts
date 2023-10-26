@@ -59,6 +59,14 @@ export const getRules = (getValues?: UseFormGetValues<any>): Rules => ({
         : undefined
   }
 })
+const handleConfirmPasswordYup = (ref: string) => {
+  return yup
+    .string()
+    .required('Confirm password là bắt buộc')
+    .min(6, 'Độ dài từ 6 - 160 kí tự')
+    .max(160, 'Độ dài từ 6 - 160 kí tự')
+    .oneOf([yup.ref(ref)], 'Confirm password không khớp')
+}
 export const schema = yup.object({
   email: yup
     .string()
@@ -71,12 +79,7 @@ export const schema = yup.object({
     .required('Password là bắt buộc')
     .min(6, 'Độ dài từ 6 - 160 kí tự')
     .max(160, 'Độ dài từ 6 - 160 kí tự'),
-  confirm_password: yup
-    .string()
-    .required('Confirm password là bắt buộc')
-    .min(6, 'Độ dài từ 6 - 160 kí tự')
-    .max(160, 'Độ dài từ 6 - 160 kí tự')
-    .oneOf([yup.ref('password')], 'Confirm password không khớp'),
+  confirm_password: handleConfirmPasswordYup('password'),
   price_min: yup
     .string()
     .default('')
@@ -109,8 +112,22 @@ export const schema = yup.object({
     }),
   name: yup.string().trim().required('Tên sản phẩm là bắt buộc')
 })
+export const userSchema = yup.object({
+  name: yup.string().max(160, 'Độ dài tối đa là 160 kí tự'),
+  phone: yup.string().max(20, 'Độ dài tối đa là 20 kí tự'),
+  address: yup.string().max(160, 'Độ dài tối đa là 160 kí tự'),
+  date_of_birth: yup.date().max(new Date(), 'Hãy chọn một ngày trong quá khứ'),
+  password: schema.fields['password'] as yup.StringSchema<string | undefined, yup.AnyObject, undefined, ''>,
+  new_password: schema.fields['password'] as yup.StringSchema<string | undefined, yup.AnyObject, undefined, ''>,
+  confirm_password: handleConfirmPasswordYup('new_password'),
+  avatar: yup.string()
+})
 
-export const loginSchema = schema.omit(['confirm_password'])
+export const loginSchema = schema.pick(['email', 'password'])
+export const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
 export const priceSchema = schema.pick(['price_max', 'price_min'])
+
 export type LoginSchema = yup.InferType<typeof loginSchema>
 export type Schema = yup.InferType<typeof schema>
+export type RegisterSchema = yup.InferType<typeof registerSchema>
+export type UserSchema = yup.InferType<typeof userSchema>

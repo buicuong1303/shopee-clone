@@ -1,16 +1,16 @@
-import { useForm } from 'react-hook-form'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import Input from 'src/components/Input/Input'
-import { getRules, LoginSchema, loginSchema } from 'src/utils/rule'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
-import { authApi } from 'src/apis/auth.api'
-import { isAxiosUnprocessableEntityError } from 'src/utils/util'
-import { ErrorResponseApi } from 'src/types/util.type'
 import { useContext } from 'react'
-import { AuthContext } from 'src/context/AuthContext'
+import { useForm } from 'react-hook-form'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { authApi } from 'src/apis/auth.api'
 import Button from 'src/components/Button/Button'
+import Input from 'src/components/Input/Input'
 import path from 'src/constants/path'
+import { AuthContext } from 'src/context/AuthContext'
+import { ErrorResponseApi } from 'src/types/util.type'
+import { LoginSchema, loginSchema } from 'src/utils/rule'
+import { isAxiosUnprocessableEntityError } from 'src/utils/util'
 interface FormData {
   email: string
   password: string
@@ -20,26 +20,26 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
-    getValues
+    setError
   } = useForm<LoginSchema>({
     resolver: yupResolver(loginSchema)
   })
-  const loginMutation = useMutation({
+  const loginMutation: any = useMutation({
     mutationFn: (body: LoginSchema) => authApi.login(body)
   })
-  const { setUser, setIsAuthenticated } = useContext(AuthContext)
+  console.log(errors)
+  const { setProfile, setIsAuthenticated } = useContext(AuthContext)
   const navigate = useNavigate()
   const location = useLocation()
   const onSubmit = handleSubmit((data) => {
     loginMutation.mutate(data, {
-      onSuccess(res, variables, context) {
-        setUser(res.data.data.user)
+      onSuccess(res: any) {
+        setProfile(res?.data?.data.user)
         setIsAuthenticated(true)
         if (location.state) return navigate(location.state.pathname)
         return navigate(path.profile)
       },
-      onError(error, variables, context) {
+      onError(error: any) {
         if (isAxiosUnprocessableEntityError<ErrorResponseApi<FormData>>(error)) {
           const formError = error.response?.data.data
           if (formError) {
@@ -54,10 +54,8 @@ function Login() {
       }
     })
   })
-  const rules = getRules(getValues)
   return (
     <div className='bg-orange'>
-      <button onClick={() => navigate('/')}>click</button>
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10 '>
           <div className='lg:col-span-2 lg:col-start-4'>

@@ -1,7 +1,8 @@
-import axios, { AxiosError, HttpStatusCode, type AxiosInstance, type InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosError, HttpStatusCode, type AxiosInstance } from 'axios'
 import { toast } from 'react-toastify'
 import { AuthResponse } from 'src/types/auth.type'
 import { clearLS } from './util'
+import { config } from 'src/constants/config'
 class Http {
   instance: AxiosInstance
   private token: string | null
@@ -9,7 +10,7 @@ class Http {
     //Lấy token ở disk lần đầu, các lần sau lấy từ ram
     this.token = localStorage.getItem('accessToken')
     this.instance = axios.create({
-      baseURL: 'https://api-ecom.duthanhduoc.com',
+      baseURL: config.BASE_URL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
@@ -27,9 +28,9 @@ class Http {
     this.instance.interceptors.response.use(
       (response) => {
         if (response.config.url === '/login') {
-          this.token = (response.data as AuthResponse).data.access_token
+          this.token = (response?.data as AuthResponse).data.access_token
           window.localStorage.setItem('accessToken', this.token)
-          window.localStorage.setItem('user', JSON.stringify(response.data.data.user))
+          window.localStorage.setItem('profile', JSON.stringify(response?.data.data.user))
         } else if (response.config.url === '/logout') {
           clearLS()
         }
@@ -38,8 +39,11 @@ class Http {
       function (error: AxiosError) {
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
           const data: any | undefined = error.response?.data
-          const message = data.message || error.message
+          const message = data?.message || error.message
           toast.error(message)
+        }
+        if (error.response?.status === HttpStatusCode.Unauthorized) {
+          clearLS()
         }
         return Promise.reject(error)
       }

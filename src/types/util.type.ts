@@ -4,4 +4,5 @@ export interface ErrorResponseApi<Data> {
 }
 export interface SuccessResponseApi<Data> {
   data: Data
+  message?: string
 }

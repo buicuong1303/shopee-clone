@@ -1,6 +1,4 @@
-import React from 'react'
-
-function Footer(props) {
+function Footer() {
   return (
     <footer className='py-16 bg-neutral-100'>
       <div className='max-w-7xl mx-auto px-4'>

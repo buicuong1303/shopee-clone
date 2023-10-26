@@ -1,14 +1,17 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { productApi } from 'src/apis/pruduct.api'
+import { useNavigate, useParams } from 'react-router-dom'
+import { productApi } from 'src/apis/product.api'
+import { purchaseApi } from 'src/apis/pursechase.api'
 import ProductRating from 'src/components/ProductRating/ProductRating'
+import QuantityController from 'src/components/QuantityController/QuantityController'
+import { purchasesStatus } from 'src/constants/purchase'
 import { ProductListConfig, Product as ProductType } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/util'
 import Product from '../ProductList/components/Product/Product'
-import QuantityController from 'src/components/QuantityController/QuantityController'
-
+import { toast } from 'react-toastify'
+import path from 'src/constants/path'
 function ProductDetail() {
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
@@ -16,6 +19,7 @@ function ProductDetail() {
     queryKey: ['product', id],
     queryFn: () => productApi.getProduct(id as string)
   })
+  const navigate = useNavigate()
   const [quantity, setQuantity] = useState(1)
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const [activeImg, setActiveImg] = useState('')
@@ -24,6 +28,7 @@ function ProductDetail() {
     () => (product ? product?.images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
   )
+  const queryClient = useQueryClient()
   const queryConfig: ProductListConfig = { limit: 20, page: 1, category: product?.category._id }
   const { data: productsData } = useQuery({
     queryKey: ['products', queryConfig],
@@ -35,6 +40,21 @@ function ProductDetail() {
     staleTime: 3 * 60 * 1000
   })
 
+  const addToCartMutation = useMutation({
+    mutationFn: (body: { buy_count: number; product_id: string }) => purchaseApi.addToCard(body)
+  })
+
+  const addToCart = () => {
+    addToCartMutation.mutate(
+      { buy_count: quantity, product_id: product?._id as string },
+      {
+        onSuccess: (data) => {
+          queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] })
+          toast.success(data.data.message, { autoClose: 2000 })
+        }
+      }
+    )
+  }
   const imageRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
@@ -76,6 +96,18 @@ function ProductDetail() {
   }
   const resetZoom = () => {
     imageRef.current?.removeAttribute('style')
+  }
+  const handleChangeQuantity = (value: number) => {
+    setQuantity(value)
+  }
+  const buyNow = async () => {
+    const res = await addToCartMutation.mutateAsync({ buy_count: quantity, product_id: product?._id as string })
+    const purchase = res.data.data
+    navigate(path.cart, {
+      state: {
+        purchaseId: purchase._id
+      }
+    })
   }
   if (!product) return null
   return (
@@ -168,18 +200,22 @@ function ProductDetail() {
                   </div>
                 </div>
                 <div className='mt-8 flex items-center'>
-                  <div className='capitalize text-gray-500'>Số lượng</div>
+                  <div className='capitalize text-gray-500 mr-8'>Số lượng</div>
                   <QuantityController
                     value={quantity}
-                    onDecrease={(value) => setQuantity(value)}
-                    onIncrease={(value) => setQuantity(value)}
-                    onType={(value) => setQuantity(value)}
+                    max={product.quantity}
+                    onDecrease={handleChangeQuantity}
+                    onIncrease={handleChangeQuantity}
+                    onType={handleChangeQuantity}
                   />
                   <div className='ml-6 text-sm text-gray-500'>{product.quantity} Sản phẩm có sẵn</div>
                 </div>
 
                 <div className='mt-8 flex items-center'>
-                  <button className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-5 capitalize text-orange shadow-sm hover:bg-orange/5'>
+                  <button
+                    onClick={addToCart}
+                    className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-5 capitalize text-orange shadow-sm hover:bg-orange/5'
+                  >
                     <svg
                       enableBackground='new 0 0 15 15'
                       viewBox='0 0 15 15'
@@ -221,7 +257,10 @@ function ProductDetail() {
                     </svg>
                     Thêm vào giỏ hàng
                   </button>
-                  <button className='ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange px-5 capitalize text-white outline-none shadow-sm hover:bg-orange/90'>
+                  <button
+                    onClick={buyNow}
+                    className='ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange px-5 capitalize text-white outline-none shadow-sm hover:bg-orange/90'
+                  >
                     Mua ngay
                   </button>
                 </div>
@@ -245,7 +284,7 @@ function ProductDetail() {
           <div className='uppercase text-gray-400'>Có thể bạn cũng thích</div>
           <div className='mt-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3'>
             {productsData &&
-              productsData.data.data.products.map((product, index) => (
+              productsData?.data.data.products.map((product) => (
                 <div className='col-span-1' key={product._id}>
                   <Product product={product} />
                 </div>

@@ -1,38 +1,37 @@
-import { Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { getRules, schema, Schema } from 'src/utils/rule'
 import { yupResolver } from '@hookform/resolvers/yup'
-import Input from 'src/components/Input/Input'
 import { useMutation } from '@tanstack/react-query'
-import { authApi } from 'src/apis/auth.api'
 import * as _ from 'lodash'
-import { isAxiosUnprocessableEntityError } from 'src/utils/util'
-import { ErrorResponseApi } from 'src/types/util.type'
+import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+import { authApi } from 'src/apis/auth.api'
 import Button from 'src/components/Button/Button'
+import Input from 'src/components/Input/Input'
 import path from 'src/constants/path'
+import { ErrorResponseApi } from 'src/types/util.type'
+import { RegisterSchema, registerSchema } from 'src/utils/rule'
+import { isAxiosUnprocessableEntityError } from 'src/utils/util'
 function Register() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
     setError
-  } = useForm<Schema>({
-    resolver: yupResolver(schema)
+  } = useForm<RegisterSchema>({
+    resolver: yupResolver(registerSchema)
   })
   const registerAccountMutation = useMutation({
-    mutationFn: (body: Omit<Schema, 'confirm_password'>) => authApi.registerAccount(body)
+    mutationFn: (body: Omit<RegisterSchema, 'confirm_password'>) => authApi.registerAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
     registerAccountMutation.mutate(_.omit(data, ['confirm_password']), {
       onSuccess: (data) => console.log(data),
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ErrorResponseApi<Omit<Schema, 'confirm_password'>>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponseApi<Omit<RegisterSchema, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           if (formError) {
             Object.keys(formError).forEach((key) => {
-              setError(key as keyof Omit<Schema, 'confirm_password'>, {
-                message: formError[key as keyof Omit<Schema, 'confirm_password'>],
+              setError(key as keyof Omit<RegisterSchema, 'confirm_password'>, {
+                message: formError[key as keyof Omit<RegisterSchema, 'confirm_password'>],
                 type: 'Server'
               })
             })

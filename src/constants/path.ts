@@ -2,9 +2,13 @@ const path = {
   home: '/',
   register: '/register',
   login: '/login',
-  profile: '/profile',
+  user: 'user',
+  profile: '/user/profile',
+  changePassword: '/user/password',
+  historyPurchase: '/user/purchases',
   logout: '/logout',
   setting: '/settings',
-  productDetail: ':nameId'
+  productDetail: ':nameId',
+  cart: '/cart'
 }
 export default path

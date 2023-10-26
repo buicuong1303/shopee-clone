@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { categoryApi } from 'src/apis/category.api'
-import { productApi } from 'src/apis/pruduct.api'
+import { productApi } from 'src/apis/product.api'
 import Pagination from 'src/components/Pagination/Pagination'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { ProductListConfig } from 'src/types/product.type'
@@ -16,16 +16,14 @@ function ProductList() {
       return productApi.getProducts(queryConfig as ProductListConfig)
     },
     keepPreviousData: true,
-    staleTime: 3 * 60 * 1000,
-    enabled: false
+    staleTime: 3 * 60 * 1000
   })
 
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: () => {
       return categoryApi.getCategories()
-    },
-    enabled: false
+    }
   })
   return (
     <div className='bg-gray-200 py-6'>
@@ -39,7 +37,7 @@ function ProductList() {
               <SortProductList queryConfig={queryConfig} pageSize={productsData.data.data.pagination.page_size} />
               <div className='mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
                 {productsData &&
-                  productsData.data.data.products.map((product, index) => (
+                  productsData.data.data.products.map((product) => (
                     <div className='col-span-1' key={product._id}>
                       <Product product={product} />
                     </div>

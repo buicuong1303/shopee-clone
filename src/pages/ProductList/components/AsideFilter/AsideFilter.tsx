@@ -1,14 +1,14 @@
+import { yupResolver } from '@hookform/resolvers/yup'
+import classNames from 'classnames'
+import { omit } from 'lodash'
+import { Controller, useForm } from 'react-hook-form'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button/Button'
-import { Category } from 'src/types/category.type'
-import classNames from 'classnames'
 import InputNumber from 'src/components/InputNumber/InputNumber'
-import { Controller, useForm } from 'react-hook-form'
-import { schema } from 'src/utils/rule'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { omit } from 'lodash'
-import RatingStart from '../RatingStart/RatingStart'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
+import { Category } from 'src/types/category.type'
+import { schema } from 'src/utils/rule'
+import RatingStart from '../RatingStart/RatingStart'
 interface Props {
   queryConfig: QueryConfig
   categories: Category[]
@@ -122,7 +122,7 @@ function AsideFilter({ queryConfig, categories }: Props) {
             <Controller
               name='price_min'
               control={control}
-              render={({ field, formState, fieldState }) => {
+              render={({ field }) => {
                 return (
                   <InputNumber
                     type='text'
@@ -141,29 +141,51 @@ function AsideFilter({ queryConfig, categories }: Props) {
                 )
               }}
             />
+            {/* <InputV2
+              control={control}
+              name='price_min'
+              className='grow'
+              placeholder='₫ TỪ'
+              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+              classNameError='hidden'
+              onChange={(event) => {
+                trigger('price_max')
+              }}
+            /> */}
             <div className='mt-1 mx-2 shrink-0'>-</div>
             <Controller
               name='price_max'
               control={control}
-              render={({ field, formState, fieldState }) => {
+              render={({ field }) => {
                 return (
                   <InputNumber
                     type='text'
                     className='grow'
                     placeholder='₫ ĐẾN'
                     classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+                    classNameError='hidden'
                     {...field}
-                    // value={field.value}
-                    // ref={field.ref}
+                    // // value={field.value}
+                    // // ref={field.ref}
                     onChange={(event) => {
                       field.onChange(event)
                       trigger('price_min')
                     }}
-                    classNameError='hidden'
                   />
                 )
               }}
             />
+            {/* <InputV2
+              control={control}
+              name='price_max'
+              className='grow'
+              placeholder='₫ ĐẾN'
+              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+              classNameError='hidden'
+              onChange={(event) => {
+                trigger('price_min')
+              }}
+            /> */}
           </div>
           <div className='mt-1 text-red-600 min-h-[1.25rem] text-sm text-center'>{errors.price_min?.message}</div>
           <Button

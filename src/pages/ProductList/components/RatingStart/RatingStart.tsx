@@ -1,4 +1,4 @@
-import { Link, createSearchParams, useNavigate } from 'react-router-dom'
+import { createSearchParams, useNavigate } from 'react-router-dom'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
 interface Props {
   queryConfig: QueryConfig

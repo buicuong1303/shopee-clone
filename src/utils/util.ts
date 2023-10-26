@@ -1,20 +1,28 @@
 import axios, { AxiosError, HttpStatusCode } from 'axios'
-import { remove } from 'lodash'
-
+import { config } from 'src/constants/config'
+import { User } from 'src/types/user.type'
+import userImage from 'src/assets/images/no-product.png'
 export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
   return axios.isAxiosError(error)
 }
 export function isAxiosUnprocessableEntityError<FormError>(error: unknown): error is AxiosError<FormError> {
   return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
-export function getUserFromLS() {
-  const user = window.localStorage.getItem('user')
-  if (user) return JSON.parse(user)
+export function getProfileFromLS() {
+  const profile = window.localStorage.getItem('profile')
+  if (profile) return JSON.parse(profile)
   return null
 }
+export const setProfileToLS = (profile: User) => {
+  localStorage.setItem('profile', JSON.stringify(profile))
+}
+export const LocalStorageEventTarget = new EventTarget()
+
 export function clearLS() {
   window.localStorage.removeItem('accessToken')
-  window.localStorage.removeItem('user')
+  window.localStorage.removeItem('profile')
+  const clearLSEvent = new Event('clearLS')
+  LocalStorageEventTarget.dispatchEvent(clearLSEvent)
 }
 
 export function formatCurrency(currency: number) {
@@ -43,3 +51,7 @@ export const getIdFromNameId = (nameId: string) => {
 export const removeSpecialCharacter = (str: string) =>
   // eslint-disable-next-line no-useless-escape
   str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, '')
+
+export const getAvatarURL = (avatarName: string) => {
+  return avatarName ? `${config.BASE_URL}/images/${avatarName}` : userImage
+}

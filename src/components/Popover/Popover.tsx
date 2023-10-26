@@ -1,18 +1,18 @@
-import React, { useState, useRef, useId, ElementType } from 'react'
 import {
-  useFloating,
-  offset,
-  shift,
-  arrow,
-  safePolygon,
-  useInteractions,
-  useHover,
-  FloatingPortal,
   FloatingArrow,
+  FloatingPortal,
+  arrow,
+  offset,
+  safePolygon,
+  shift,
+  useFloating,
+  useHover,
+  useInteractions,
   type Placement
 } from '@floating-ui/react'
-import { motion, AnimatePresence } from 'framer-motion'
-const ARROW_WIDTH = 30
+import { AnimatePresence, motion } from 'framer-motion'
+import React, { ElementType, useId, useRef, useState } from 'react'
+// const ARROW_WIDTH = 30
 //khoảng cách giữa popover và thẻ cha
 const ARROW_HEIGHT = 5
 interface Props {
@@ -40,7 +40,7 @@ function Popover({ children, className, render, as: Element = 'div', placement =
   })
   //safePolygon không tắt popover khi move từ thẻ cha sang popover
   const hover = useHover(context, { handleClose: safePolygon() })
-  const { getReferenceProps, getFloatingProps } = useInteractions([hover])
+  const { getFloatingProps } = useInteractions([hover])
   return (
     <Element className={className} ref={refs.setReference} {...getFloatingProps()}>
       {children}
