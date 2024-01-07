@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { produce } from 'immer'
-import { keyBy } from 'lodash'
+import keyBy from 'lodash/keyBy'
 import { useContext, useEffect, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -87,14 +87,14 @@ function Cart() {
     deletePurchaseMutation.mutate(purchaseIds)
   }
 
-  const handleChangeQuantity = (purchaseIndex: number, value: number, enable: boolean) => {
+  const handleChangeQuantity = (purchaseIndex: number, value: number, disable: boolean) => {
     const purchase = extendedPurchases[purchaseIndex]
     setExtendedPurchases(
       produce((draft) => {
-        draft[purchaseIndex].disabled = enable
+        draft[purchaseIndex].disabled = disable
       })
     )
-    enable &&
+    disable &&
       updatePurchaseMutation.mutate({
         product_id: purchase.product._id,
         buy_count: value

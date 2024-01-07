@@ -12,6 +12,9 @@ import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } 
 import Product from '../ProductList/components/Product/Product'
 import { toast } from 'react-toastify'
 import path from 'src/constants/path'
+import { useTranslation } from 'react-i18next'
+import { Helmet } from 'react-helmet-async'
+import { convert } from 'html-to-text'
 function ProductDetail() {
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
@@ -29,6 +32,7 @@ function ProductDetail() {
     [product, currentIndexImages]
   )
   const queryClient = useQueryClient()
+  const { t } = useTranslation(['product'])
   const queryConfig: ProductListConfig = { limit: 20, page: 1, category: product?.category._id }
   const { data: productsData } = useQuery({
     queryKey: ['products', queryConfig],
@@ -112,6 +116,18 @@ function ProductDetail() {
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
+      <Helmet>
+        <title>{product.name} | Shopee clone</title>
+        <meta
+          name='description'
+          content={convert(product.description, {
+            limits: {
+              ellipsis: '...',
+              maxInputLength: 150
+            }
+          })}
+        />
+      </Helmet>
       <div className='container'>
         <div className='bg-white p-4 shadow'>
           <div className='container'>
@@ -208,7 +224,9 @@ function ProductDetail() {
                     onIncrease={handleChangeQuantity}
                     onType={handleChangeQuantity}
                   />
-                  <div className='ml-6 text-sm text-gray-500'>{product.quantity} Sản phẩm có sẵn</div>
+                  <div className='ml-6 text-sm text-gray-500'>
+                    {product.quantity} {t('product:available products')}
+                  </div>
                 </div>
 
                 <div className='mt-8 flex items-center'>

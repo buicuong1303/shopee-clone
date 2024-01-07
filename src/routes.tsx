@@ -41,6 +41,16 @@ export function Routes() {
       )
     },
     {
+      path: path.productDetail,
+      element: (
+        <React.Suspense fallback={<>...</>}>
+          <MainLayout>
+            <ProductDetail />
+          </MainLayout>
+        </React.Suspense>
+      )
+    },
+    {
       path: '',
       element: <RejectedRoute />,
       children: [
@@ -126,16 +136,7 @@ export function Routes() {
         }
       ]
     },
-    {
-      path: path.productDetail,
-      element: (
-        <React.Suspense fallback={<>...</>}>
-          <MainLayout>
-            <ProductDetail />
-          </MainLayout>
-        </React.Suspense>
-      )
-    },
+
     {
       path: '*',
       element: (

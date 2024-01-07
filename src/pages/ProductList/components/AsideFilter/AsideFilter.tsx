@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import { Controller, useForm } from 'react-hook-form'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button/Button'
@@ -9,6 +9,7 @@ import { QueryConfig } from 'src/hooks/useQueryConfig'
 import { Category } from 'src/types/category.type'
 import { schema } from 'src/utils/rule'
 import RatingStart from '../RatingStart/RatingStart'
+import { useTranslation } from 'react-i18next'
 interface Props {
   queryConfig: QueryConfig
   categories: Category[]
@@ -20,6 +21,7 @@ type FormData = {
 const priceSchema = schema.pick(['price_min', 'price_max'])
 function AsideFilter({ queryConfig, categories }: Props) {
   const { category } = queryConfig
+  const { t } = useTranslation('home') // truyen namespace vao
   const {
     control,
     handleSubmit,
@@ -47,7 +49,7 @@ function AsideFilter({ queryConfig, categories }: Props) {
   const handelRemoveFilter = () => {
     navigate({
       pathname: '/',
-      search: createSearchParams(omit(queryConfig, ['price_min', 'price_max', 'rating-filter'])).toString()
+      search: createSearchParams(omit(queryConfig, ['price_min', 'price_max', 'rating_filter'])).toString()
     })
   }
   return (
@@ -65,8 +67,9 @@ function AsideFilter({ queryConfig, categories }: Props) {
               </g>
             </g>
           </g>
+          s
         </svg>
-        Tất cả danh mục
+        {t('aside filter.all categories')}
       </Link>
       <div className='bg-gray-300 h-[1px] my-4'></div>
       <ul>
@@ -112,7 +115,7 @@ function AsideFilter({ queryConfig, categories }: Props) {
             ></polyline>
           </g>
         </svg>
-        Bộ lọc tìm kiếm
+        {t('aside filter.filter')}
       </Link>
       <div className='bg-gray-300 h-[1px] my-4'></div>
       <div className='my-5'>
