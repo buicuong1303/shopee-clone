@@ -1,6 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
-import * as _ from 'lodash'
+// chỉ import mỗi func omit
+import omit from 'lodash/omit'
+import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { authApi } from 'src/apis/auth.api'
@@ -23,7 +25,7 @@ function Register() {
     mutationFn: (body: Omit<RegisterSchema, 'confirm_password'>) => authApi.registerAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
-    registerAccountMutation.mutate(_.omit(data, ['confirm_password']), {
+    registerAccountMutation.mutate(omit(data, ['confirm_password']), {
       onSuccess: (data) => console.log(data),
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponseApi<Omit<RegisterSchema, 'confirm_password'>>>(error)) {
@@ -43,6 +45,10 @@ function Register() {
   // const rules = getRules(getValues)
   return (
     <div className='bg-orange'>
+      <Helmet>
+        <title>Đăng ký | Shopee clone</title>
+        <meta name='description' content='Dự án clone shopee' />
+      </Helmet>
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10 '>
           <div className='lg:col-span-2 lg:col-start-4'>

@@ -40,9 +40,9 @@ function Popover({ children, className, render, as: Element = 'div', placement =
   })
   //safePolygon không tắt popover khi move từ thẻ cha sang popover
   const hover = useHover(context, { handleClose: safePolygon() })
-  const { getFloatingProps } = useInteractions([hover])
+  const { getFloatingProps, getReferenceProps } = useInteractions([hover])
   return (
-    <Element className={className} ref={refs.setReference} {...getFloatingProps()}>
+    <Element className={className} ref={refs.setReference} {...getReferenceProps()}>
       {children}
       <AnimatePresence>
         {isOpen && (

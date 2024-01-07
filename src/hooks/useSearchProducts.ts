@@ -1,6 +1,6 @@
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import useQueryConfig from './useQueryConfig'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import path from 'src/constants/path'
 import { useForm } from 'react-hook-form'
 import { Schema, schema } from 'src/utils/rule'

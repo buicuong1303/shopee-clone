@@ -2,11 +2,31 @@ import axios, { AxiosError, HttpStatusCode } from 'axios'
 import { config } from 'src/constants/config'
 import { User } from 'src/types/user.type'
 import userImage from 'src/assets/images/no-product.png'
+import { ErrorResponseApi } from 'src/types/util.type'
 export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
   return axios.isAxiosError(error)
 }
 export function isAxiosUnprocessableEntityError<FormError>(error: unknown): error is AxiosError<FormError> {
   return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
+}
+
+export function isAxiosUnauthorizedEntityError<UnauthorizedError>(
+  error: unknown
+): error is AxiosError<UnauthorizedError> {
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.Unauthorized
+}
+
+export function isAxiosExpiredTokenEntityError<UnauthorizedError>(
+  error: unknown
+): error is AxiosError<UnauthorizedError> {
+  return (
+    isAxiosUnauthorizedEntityError<
+      ErrorResponseApi<{
+        name: string
+        message: string
+      }>
+    >(error) && error.response?.data.data?.name === 'EXPIRED_TOKEN'
+  )
 }
 export function getProfileFromLS() {
   const profile = window.localStorage.getItem('profile')
@@ -20,6 +40,7 @@ export const LocalStorageEventTarget = new EventTarget()
 
 export function clearLS() {
   window.localStorage.removeItem('accessToken')
+  window.localStorage.removeItem('refreshToken')
   window.localStorage.removeItem('profile')
   const clearLSEvent = new Event('clearLS')
   LocalStorageEventTarget.dispatchEvent(clearLSEvent)

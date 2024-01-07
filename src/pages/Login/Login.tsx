@@ -11,6 +11,7 @@ import { AuthContext } from 'src/context/AuthContext'
 import { ErrorResponseApi } from 'src/types/util.type'
 import { LoginSchema, loginSchema } from 'src/utils/rule'
 import { isAxiosUnprocessableEntityError } from 'src/utils/util'
+import { Helmet } from 'react-helmet-async'
 interface FormData {
   email: string
   password: string
@@ -56,6 +57,10 @@ function Login() {
   })
   return (
     <div className='bg-orange'>
+      <Helmet>
+        <title>Đăng nhập | Shopee clone</title>
+        <meta name='description' content='Dự án clone shopee' />
+      </Helmet>
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10 '>
           <div className='lg:col-span-2 lg:col-start-4'>

@@ -25,7 +25,7 @@ function Input({
     setVisiblePassword(!visiblePassword)
   }
   return (
-    <div className={className}>
+    <div className={className + ' relative'}>
       <input type={visiblePassword ? 'text' : type} className={classNameInput} {...registerResult} {...rest} />
       {type === 'password' && visiblePassword && (
         <svg
@@ -34,7 +34,7 @@ function Input({
           viewBox='0 0 24 24'
           strokeWidth='1.5'
           stroke='currentColor'
-          className='w-6 h-5 absolute cursor-pointer top-[8px] right-[5px]'
+          className='w-6 h-5 absolute cursor-pointer top-[13px] right-[5px]'
           onClick={handleToggleVisible}
         >
           <path
@@ -52,7 +52,7 @@ function Input({
           viewBox='0 0 24 24'
           strokeWidth={1.5}
           stroke='currentColor'
-          className='w-6 h-5 absolute cursor-pointer top-[8px] right-[5px]'
+          className='w-6 h-5 absolute cursor-pointer top-[13px] right-[5px]'
           onClick={handleToggleVisible}
         >
           <path

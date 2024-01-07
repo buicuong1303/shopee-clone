@@ -1,7 +1,7 @@
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
 import { ProductListConfig } from 'src/types/product.type'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 interface Props {
@@ -30,6 +30,7 @@ function SortProductList({ queryConfig, pageSize }: Props) {
       ).toString()
     })
   }
+  //Exclude loại bỏ value undefined của field order
   const handlePriceOrder = (orderValue: Exclude<ProductListConfig['order'], undefined>) => {
     navigate({
       pathname: '/',
